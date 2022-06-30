@@ -10,8 +10,8 @@ from message import create_music_detail_embed
 from options import ytdl_options, ffmpeg_options
 
 
-if os.getenv('DEBUG') == '1':
-    bot = Bot(debug_guilds=[os.getenv('GUILD_ID')])
+if os.getenv('DEBUG_GUILDS'):
+    bot = Bot(debug_guilds=os.getenv('DEBUG_GUILDS').split(','))
 else:
     bot = Bot()
 
@@ -50,7 +50,7 @@ async def play(ctx: ApplicationContext, input: Option(str, '検索語句また�
         await ctx.respond(f'{ctx.author} is not in vc')
         return
 
-    voice = get(bot.voice_clients, guild=ctx.guild)
+    voice: VoiceClient = get(bot.voice_clients, guild=ctx.guild)
     voice = await connect(ctx, voice)
 
     music: Music = yt.search(input)
@@ -63,6 +63,27 @@ async def play(ctx: ApplicationContext, input: Option(str, '検索語句また�
         return
 
     play_queue(voice, ctx.guild_id)
+
+
+
+
+@bot.command()
+async def skip(ctx: ApplicationContext):
+    if ctx.author.voice is None:
+        await ctx.respond(f'{ctx.author} is not in vc')
+        return
+
+    voice: VoiceClient = get(bot.voice_clients, guild=ctx.guild)
+
+    if voice is None:
+        await ctx.respond(f'{bot.user} is not in vc')
+        return
+
+    voice.stop()
+    await ctx.respond('skiped')
+
+    play_queue(voice, ctx.guild_id)
+
 
 
 
