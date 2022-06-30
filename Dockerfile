@@ -7,7 +7,15 @@ WORKDIR /usr/src/app
 
 COPY ./app .
 
-RUN apt install libffi-dev libnacl-dev python3-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    libffi-dev \
+    libnacl-dev \
+    python3-dev \
+    ffmpeg \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/*
 RUN pip install -U py-cord[voice] --pre --no-cache-dir
+RUN pip install google-api-python-client youtube_dl --no-cache-dir
 
 CMD ["python", "-u", "main.py"]

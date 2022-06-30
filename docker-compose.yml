@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: luciov2:python3.10
+    restart: always
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - ./.env
+
